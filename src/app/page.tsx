@@ -10,13 +10,13 @@ export default function HomePage() {
     <div className="animate-fadeIn">
       <section 
         className="relative py-20 md:py-32 bg-cover bg-center" 
-        style={{ backgroundImage: "url('https://placehold.co/1920x1080.png?text=Adventure+Awaits')" }}
+        style={{ backgroundImage: "url('/images/morskie-oko-tatry.jpg')" }}
         data-ai-hint="mountain landscape"
       >
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h1 className="font-headline text-5xl md:text-7xl font-bold text-white mb-6">
-            Nomad Navigator
+            Trip Wrip
           </h1>
           <p className="font-body text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
             Discover your next adventure. Let us guide you to unforgettable destinations.

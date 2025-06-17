@@ -1,18 +1,14 @@
-// @ts-nocheck
-'use client';
-
 import { trips } from '@/lib/data';
 import type { Trip } from '@/lib/types';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { CalendarDays, Users, DollarSign, MapPin, Star, CheckCircle, Navigation } from 'lucide-react';
+import { CalendarDays, Users, DollarSign, MapPin, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { useToast } from "@/hooks/use-toast";
+import { BookingButton } from './BookingButton';
 
 interface TripDetailsPageProps {
   params: {
@@ -20,34 +16,15 @@ interface TripDetailsPageProps {
   };
 }
 
-// generateStaticParams can still be used with client components
-// export async function generateStaticParams() {
-//   return trips.map((trip) => ({
-//     id: trip.id,
-//   }));
-// }
-// For the purpose of this immediate fix, and to avoid potential issues with mixing
-// server-side generation for static params with a client component if not handled carefully,
-// I'll comment out generateStaticParams. If static generation is critical,
-// this page might need refactoring to keep the data fetching part server-side
-// and pass data to a client child component, or use Next.js 13+ patterns for this.
-// However, for simply making the button work with a toast, this is the most direct approach.
-
 export default function TripDetailsPage({ params }: TripDetailsPageProps) {
   const trip = trips.find((t) => t.id === params.id);
-  const { toast } = useToast();
 
   if (!trip) {
     notFound();
   }
 
-  const handleBookingClick = () => {
-    toast({
-      title: "Booking Feature Coming Soon!",
-      description: "We're working hard to bring you this feature. Please check back later.",
-      variant: "default",
-    });
-  };
+  // Defensive: Split destination for city/country
+  const [city, country] = trip.destination.split(',').map(s => s.trim());
 
   return (
     <div className="container mx-auto px-4 py-12 animate-fadeIn">
@@ -57,7 +34,7 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
           <Link href="/" className="text-sm text-accent hover:underline mb-4 inline-block">&larr; Back to all trips</Link>
           <h1 className="font-headline text-4xl sm:text-5xl font-bold mb-3 text-primary">{trip.destination}</h1>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-muted-foreground font-body">
-            <span className="flex items-center gap-1.5"><MapPin size={16} /> {trip.destination.split(',')[1]}</span>
+            <span className="flex items-center gap-1.5"><MapPin size={16} /> {country}</span>
             <span className="flex items-center gap-1.5"><CalendarDays size={16} /> {trip.dates}</span>
           </div>
         </header>
@@ -65,16 +42,16 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
         {/* Image Gallery */}
         <section className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2">
-             <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg overflow-hidden">
-                <Image
-                    src={trip.images[0]}
-                    alt={`Main image of ${trip.destination}`}
-                    layout="fill"
-                    className="object-cover transition-transform duration-300 hover:scale-105"
-                    priority
-                    data-ai-hint={`${trip.destination.split(',')[0].toLowerCase()} primary attraction`}
-                />
-             </AspectRatio>
+            <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg overflow-hidden">
+              <Image
+                src={trip.images[0]}
+                alt={`Main image of ${trip.destination}`}
+                fill
+                className="object-cover transition-transform duration-300 hover:scale-105"
+                priority
+                data-ai-hint={`${city?.toLowerCase() ?? ''} primary attraction`}
+              />
+            </AspectRatio>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
             {trip.images.slice(1, 3).map((imgSrc, index) => (
@@ -82,9 +59,9 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                 <Image
                   src={imgSrc}
                   alt={`Image ${index + 2} of ${trip.destination}`}
-                  layout="fill"
+                  fill
                   className="object-cover transition-transform duration-300 hover:scale-105"
-                  data-ai-hint={`${trip.destination.split(',')[0].toLowerCase()} secondary attraction ${index + 1}`}
+                  data-ai-hint={`${city?.toLowerCase() ?? ''} secondary attraction ${index + 1}`}
                 />
               </AspectRatio>
             ))}
@@ -105,7 +82,7 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
             <section>
               <h2 className="font-headline text-3xl font-semibold mb-6">Full Itinerary</h2>
               <div className="space-y-6">
-                {trip.fullItinerary.map((item) => (
+                {trip.fullItinerary.map((item, idx) => (
                   <div key={item.day} className="flex gap-4 pb-6 border-b border-dashed last:border-b-0">
                     <div className="flex flex-col items-center">
                       <div className="bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg font-headline">
@@ -151,29 +128,24 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                   <span className="text-muted-foreground flex items-center gap-2"><CalendarDays size={18} /> Duration:</span>
                   <span className="font-semibold">{trip.fullItinerary.length} days</span>
                 </div>
-                {/* Example of custom icon usage for amenities - using Lucide for now */}
                 <div className="pt-2">
-                    <h4 className="font-semibold mb-2 text-md">Includes:</h4>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Accommodation</li>
-                        <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Guided Tours</li>
-                        <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Some Meals</li>
-                        <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Local Transport</li>
-                    </ul>
+                  <h4 className="font-semibold mb-2 text-md">Includes:</h4>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Accommodation</li>
+                    <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Guided Tours</li>
+                    <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Some Meals</li>
+                    <li className="flex items-center gap-2"><CheckCircle size={16} className="text-green-500" /> Local Transport</li>
+                  </ul>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button 
-                  size="lg" 
-                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-                  onClick={handleBookingClick}
-                >
-                  <Navigation size={20} className="mr-2"/> Book This Trip
-                </Button>
+                <BookingButton />
               </CardFooter>
             </Card>
             <div className="text-center p-4 bg-secondary/50 rounded-lg">
-                <p className="font-body text-sm text-muted-foreground">Questions about this trip? <Link href="/contact" className="text-accent hover:underline font-semibold">Contact us</Link></p>
+              <p className="font-body text-sm text-muted-foreground">
+                Questions about this trip? <Link href="/contact" className="text-accent hover:underline font-semibold">Contact us</Link>
+              </p>
             </div>
           </aside>
         </div>
@@ -182,11 +154,6 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
   );
 }
 
-// Note: If generateStaticParams is needed, careful consideration is required for how it interacts
-// with client components. For this fix, it's commented. If you need to re-enable it, ensure
-// the data fetching and page structure are compatible with Next.js App Router patterns
-// for client components that also use static generation. One common pattern is to have a
-// server component fetch data and pass it to a client child component.
 export async function generateStaticParams() {
   return trips.map((trip) => ({
     id: trip.id,

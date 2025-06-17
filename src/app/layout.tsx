@@ -5,7 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'Nomad Navigator',
+  title: 'Trip Wrip',
   description: 'Discover your next adventure with Nomad Navigator.',
 };
 

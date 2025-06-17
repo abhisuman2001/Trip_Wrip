@@ -3,13 +3,13 @@ import type { Trip } from './types';
 export const trips: Trip[] = [
   {
     id: 'paris-classique',
-    destination: 'Paris, France',
-    dates: 'September 5-12, 2024',
-    price: 1800,
-    availableSlots: 12,
-    image: 'https://placehold.co/600x400.png?text=Paris',
+    destination: 'Kedarnath, India',
+    dates: 'September 5-12, 2025',
+    price: 7999,
+    availableSlots: 20,
+    image: '/images/kedar-nath-temple_1048944-19020421.avif',
     images: [
-      'https://placehold.co/800x600.png?text=Eiffel+Tower',
+      '/images/morskie-oko-tatry.jpg',
       'https://placehold.co/800x600.png?text=Louvre+Museum',
       'https://placehold.co/800x600.png?text=Seine+River',
     ],
