@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { BookingButton } from './BookingButton';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { BookingSection } from './BookingSection';
 
 interface TripDetailsPageProps {
   params: {
@@ -16,14 +16,14 @@ interface TripDetailsPageProps {
   };
 }
 
-export default function TripDetailsPage({ params }: TripDetailsPageProps) {
+export default async function TripDetailsPage(props: TripDetailsPageProps) {
+  const { params } = props;
   const trip = trips.find((t) => t.id === params.id);
 
   if (!trip) {
     notFound();
   }
 
-  // Defensive: Split destination for city/country
   const [city, country] = trip.destination.split(',').map(s => s.trim());
 
   return (
@@ -138,9 +138,8 @@ export default function TripDetailsPage({ params }: TripDetailsPageProps) {
                   </ul>
                 </div>
               </CardContent>
-              <CardFooter>
-                <BookingButton />
-              </CardFooter>
+              {/* BookingSection handles the booking button and modal */}
+              <BookingSection tripDestination={trip.destination} />
             </Card>
             <div className="text-center p-4 bg-secondary/50 rounded-lg">
               <p className="font-body text-sm text-muted-foreground">
