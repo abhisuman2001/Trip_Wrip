@@ -5,9 +5,11 @@ import { useState } from 'react';
 export function BookingModal({
   onBook,
   onClose,
+  loading,
 }: {
   onBook: (data: { name: string; email: string }) => void;
   onClose: () => void;
+  loading: boolean;
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -40,10 +42,10 @@ export function BookingModal({
           required
         />
         <div className="flex gap-2">
-          <button type="submit" className="flex-1 bg-accent text-white py-2 rounded">
-            Book
+          <button type="submit" className="flex-1 bg-accent text-white py-2 rounded" disabled={loading}>
+            {loading ? 'Booking...' : 'Book'}
           </button>
-          <button type="button" className="flex-1 bg-gray-300 py-2 rounded" onClick={onClose}>
+          <button type="button" className="flex-1 bg-gray-300 py-2 rounded" onClick={onClose} disabled={loading}>
             Cancel
           </button>
         </div>

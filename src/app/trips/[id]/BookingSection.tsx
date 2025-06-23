@@ -6,10 +6,27 @@ import { CardFooter } from '@/components/ui/card';
 
 export function BookingSection({ tripDestination }: { tripDestination: string }) {
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleBook = (data: { name: string; email: string }) => {
-    alert(`Thank you, ${data.name}! Your booking request for ${tripDestination} has been received.`);
-    setShowModal(false);
+  const handleBook = async (data: { name: string; email: string }) => {
+    setLoading(true);
+    const res = await fetch('/api/bookings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...data,
+        trip: tripDestination,
+      }),
+    });
+
+    setLoading(false);
+
+    if (res.ok) {
+      alert('Booking successful!');
+      setShowModal(false);
+    } else {
+      alert('Booking failed. Please try again.');
+    }
   };
 
   return (
@@ -21,7 +38,13 @@ export function BookingSection({ tripDestination }: { tripDestination: string })
       >
         Book This Trip
       </button>
-      {showModal && <BookingModal onBook={handleBook} onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <BookingModal
+          onBook={handleBook}
+          onClose={() => setShowModal(false)}
+          loading={loading}
+        />
+      )}
     </CardFooter>
   );
 }
